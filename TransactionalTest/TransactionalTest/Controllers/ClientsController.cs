@@ -12,11 +12,13 @@ namespace TransactionalTest.Controllers
     {
         private IClientRepository _clientRepository;
         private ICompareServices _compareServices;
+        private ILogger _logger;
 
-        public ClientsController(IClientRepository clientRepository, ICompareServices compareServices)
+        public ClientsController(IClientRepository clientRepository, ICompareServices compareServices, ILogger logger)
         {
             _clientRepository = clientRepository;
             _compareServices = compareServices;
+            _logger = logger;
         }
         [HttpGet]
         public async Task<IActionResult> GetAllClientsAsync()
