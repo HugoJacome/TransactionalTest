@@ -13,7 +13,6 @@ namespace TransactionalTest.Repositories
         Task<Client> CreateClientAsync(Client client);
         void UpdateClientById(Client client);
         Task<Client> UpdateClientPatchAsync(Guid id, JsonPatchDocument clientDocument);
-
         void DeleteClientById(Client client);
     }
     public class ClientRepository : IClientRepository
