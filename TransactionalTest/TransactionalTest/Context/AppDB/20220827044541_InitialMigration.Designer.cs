@@ -12,7 +12,7 @@ using TransactionalTest.Context;
 namespace TransactionalTest.Context.AppDB
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20220826050535_InitialMigration")]
+    [Migration("20220827044541_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -30,9 +30,8 @@ namespace TransactionalTest.Context.AppDB
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("AccountNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<long>("AccountNumber")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("AccountType")
                         .HasColumnType("int");
@@ -43,7 +42,12 @@ namespace TransactionalTest.Context.AppDB
                     b.Property<int>("State")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("clientId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("clientId");
 
                     b.ToTable("Account");
                 });
@@ -90,7 +94,6 @@ namespace TransactionalTest.Context.AppDB
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Age")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Discriminator")
@@ -101,7 +104,6 @@ namespace TransactionalTest.Context.AppDB
                         .HasColumnType("int");
 
                     b.Property<string>("Identification")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -130,26 +132,21 @@ namespace TransactionalTest.Context.AppDB
                     b.Property<int>("State")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("accountId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasIndex("accountId");
-
                     b.HasDiscriminator().HasValue("Client");
                 });
 
-            modelBuilder.Entity("TransactionalTest.Models.Movements", b =>
+            modelBuilder.Entity("TransactionalTest.Models.Account", b =>
                 {
-                    b.HasOne("TransactionalTest.Models.Account", "account")
+                    b.HasOne("TransactionalTest.Models.Client", "client")
                         .WithMany()
-                        .HasForeignKey("accountId")
+                        .HasForeignKey("clientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("account");
+                    b.Navigation("client");
                 });
 
-            modelBuilder.Entity("TransactionalTest.Models.Client", b =>
+            modelBuilder.Entity("TransactionalTest.Models.Movements", b =>
                 {
                     b.HasOne("TransactionalTest.Models.Account", "account")
                         .WithMany()
