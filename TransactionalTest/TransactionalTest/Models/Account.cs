@@ -11,6 +11,7 @@ namespace TransactionalTest.Models
         public long AccountNumber { get; set; }
         public AccountTypeEnum AccountType { get; set; }
         public double OpeningBalance { get; set; }
+        public double Balance { get; set; }
         public StateEnum State { get; set; }
         public Client client { get; set; }
     }
