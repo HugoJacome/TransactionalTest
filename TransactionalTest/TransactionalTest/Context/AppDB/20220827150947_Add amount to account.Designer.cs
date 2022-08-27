@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TransactionalTest.Context;
 
@@ -11,9 +12,10 @@ using TransactionalTest.Context;
 namespace TransactionalTest.Context.AppDB
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220827150947_Add amount to account")]
+    partial class Addamounttoaccount
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -59,8 +61,9 @@ namespace TransactionalTest.Context.AppDB
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<double>("Balance")
-                        .HasColumnType("float");
+                    b.Property<string>("Balance")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("MovementDate")
                         .HasColumnType("datetime2");
@@ -69,8 +72,9 @@ namespace TransactionalTest.Context.AppDB
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("Value")
-                        .HasColumnType("float");
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("accountId")
                         .HasColumnType("uniqueidentifier");
