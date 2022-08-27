@@ -1,20 +1,74 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
+using TransactionalTest.Models;
+using TransactionalTest.Repositories;
+using TransactionalTest.Services;
 
 namespace TransactionalTest.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("clientes")]
     public class ClientsController : Controller
     {
+        private IClientRepository _clientRepository;
+        private ICompareServices _compareServices;
+
+        public ClientsController(IClientRepository clientRepository, ICompareServices compareServices)
+        {
+            _clientRepository = clientRepository;
+            _compareServices = compareServices;
+        }
         [HttpGet]
-        public IActionResult Get() => throw new NotImplementedException();
+        public async Task<IActionResult> GetAllClientsAsync()
+        {
+            var res = await _clientRepository.GetClientsAsync();
+            if (res == null) return NotFound();
+            return Ok(res);
+        }
+        [HttpGet("{Id}")]
+        public async Task<IActionResult> GetAsync(Guid Id)
+        {
+            var res = await _clientRepository.GetClientByIdAsync(Id);
+            if (res == null) return NotFound();
+            return Ok(res);
+        }
         [HttpPost]
-        public IActionResult Post() => throw new NotImplementedException();
-        [HttpPut]
-        public IActionResult Put() => throw new NotImplementedException();
-        [HttpPatch]
-        public IActionResult Push() => throw new NotImplementedException();
-        [HttpDelete]
-        public IActionResult Delete() => throw new NotImplementedException();
+        public async Task<IActionResult> Post(Client client)
+        {
+            var res = await _clientRepository.CreateClientAsync(client);
+            if (res == null) return NotFound();
+            return Ok(res);
+        }
+        [HttpPut("{Id}")]
+        public async Task<IActionResult> PutAsync(Client client, Guid Id)
+        {
+            if (Id != client.Id) BadRequest("Error en relacion");
+            var clientDB = await _clientRepository.GetClientByIdAsync(Id);
+            if (clientDB == null) return NotFound();
+            // update
+            if (_compareServices.CompareClient(client, clientDB)) BadRequest("Cliente sin cambios");
+            _clientRepository.UpdateClientById(client);
+            return Ok(client);
+        }
+        [HttpDelete("{Id}")]
+        public async Task<IActionResult> DeleteAsync(Guid Id)
+        {
+            var client = await _clientRepository.GetClientByIdAsync(Id);
+            if (client == null) return NotFound();
+            // delete
+            _clientRepository.DeleteClientById(client);
+            return Ok(Id);
+        }
+
+        [HttpPatch("{Id}")]
+        public async Task<IActionResult> PatchClient(Guid id, [FromBody] JsonPatchDocument clientDocument)
+        {
+            var updatedClient = await _clientRepository.UpdateClientPatchAsync(id, clientDocument);
+            if (updatedClient == null)
+            {
+                return NotFound();
+            }
+            return Ok(updatedClient);
+        }
     }
 }
