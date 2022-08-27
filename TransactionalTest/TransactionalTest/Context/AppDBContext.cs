@@ -15,5 +15,10 @@ namespace TransactionalTest.Context
             optionsBuilder.UseSqlServer(
                 @"Server=UWBERMR4VR;Database=TransactionalDB;User ID=sa;Password=20bdd03.;");
         }
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
     }
 }
