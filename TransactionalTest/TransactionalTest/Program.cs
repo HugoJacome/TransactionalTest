@@ -19,8 +19,11 @@ builder.Services.AddTransient<IAppDBContext, AppDBContext>();
 // Repositories
 builder.Services.AddTransient<IClientRepository, ClientRepository>();
 builder.Services.AddTransient<IAccountRepository, AccountRepository>();
+builder.Services.AddTransient<IMovementRepository, MovementsRepository>();
+builder.Services.AddTransient<IReportRepository, ReportRepository>();
 //Services
 builder.Services.AddTransient<ICompareServices, CompareServices>();
+builder.Services.AddTransient<IValidateServices, ValidateServices>();
 
 
 
