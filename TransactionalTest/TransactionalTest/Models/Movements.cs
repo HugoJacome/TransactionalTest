@@ -4,6 +4,7 @@ namespace TransactionalTest.Models
 {
     public class MovementRequest
     {
+        [Required]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime MovementDate { get; set; }
@@ -15,18 +16,10 @@ namespace TransactionalTest.Models
         public double Value { get; set; }
 
     }
-    public class Movements
+    public class Movements: MovementRequest
     {
         [Key]
         public Guid MovementId { get; set; }
-        [Required]
-        [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        public DateTime MovementDate { get; set; }
-        [Required]
-        public string MovementType { get; set; }
-        [Required]
-        public double Value { get; set; }
         public double Balance { get; set; }
         public Account account { get; set; }
     }

@@ -2,10 +2,8 @@
 
 namespace TransactionalTest.Models
 {
-    public class Account
+    public class AccountRequest
     {
-        [Key]
-        public Guid Id { get; set; }
         [Required]
         [RegularExpression(@"^[0-9]*$")]
         public long AccountNumber { get; set; }
@@ -13,7 +11,13 @@ namespace TransactionalTest.Models
         public double OpeningBalance { get; set; }
         public double Balance { get; set; }
         public StateEnum State { get; set; }
-        public Client client { get; set; }
+        public string ClientIdentification{ get; set; }
+    }
+    public class Account: AccountRequest
+    {
+        [Key]
+        public Guid Id { get; set; }
+        public Guid clientId { get; set; }
     }
     public class AccountInfoEqualityComparer : IEqualityComparer<Account>
     {
