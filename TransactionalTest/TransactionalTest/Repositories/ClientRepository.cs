@@ -9,11 +9,12 @@ namespace TransactionalTest.Repositories
     {
         Task<List<Client>> GetClientsAsync();
         Task<Client?> GetClientByIdAsync(Guid id);
+        Task<Client?> GetClientByIdentificationAsync(string identification);
         Task<Client?> GetClientByNameAsync(string name);
         Task<Client> CreateClientAsync(Client client);
-        void UpdateClientById(Client client);
+        Task<bool> UpdateClientById(Client client);
         Task<Client> UpdateClientPatchAsync(Guid id, JsonPatchDocument clientDocument);
-        void DeleteClientById(Client client);
+        Task<bool> DeleteClientById(Client client);
     }
     public class ClientRepository : IClientRepository
     {
@@ -31,15 +32,28 @@ namespace TransactionalTest.Repositories
             return client;
         }
 
-        public async void DeleteClientById(Client client)
+        public async Task<bool> DeleteClientById(Client client)
         {
-            _context.Client.Remove(client);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Client.Remove(client);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public async Task<Client?> GetClientByIdAsync(Guid id) 
         {
             return await _context.Client.FirstOrDefaultAsync(c => c.Id == id);
+        }
+
+        public async Task<Client?> GetClientByIdentificationAsync(string identification)
+        {
+            return await _context.Client.FirstOrDefaultAsync(c => c.Identification == identification);
         }
 
         public async Task<Client?> GetClientByNameAsync(string name)
@@ -52,20 +66,29 @@ namespace TransactionalTest.Repositories
             return await _context.Client.ToListAsync();
         }
 
-        public async void UpdateClientById(Client client)
+        public async Task<bool> UpdateClientById(Client client)
         {
-            var entity = await _context.Client.FirstOrDefaultAsync(c => c.Id == client.Id);
-            if (entity != null)
-            { 
-                entity.Address = client.Address;
-                entity.Age = client.Age;
-                entity.Gender = client.Gender;
-                entity.Name = client.Name;
-                entity.Password = client.Password;
-                entity.Phone = client.Phone;
-                entity.State = client.State;
+            try
+            {
+                var entity = await _context.Client.FirstOrDefaultAsync(c => c.Id == client.Id);
+                if (entity != null)
+                {
+                    entity.Address = client.Address;
+                    entity.Age = client.Age;
+                    entity.Gender = client.Gender;
+                    entity.Name = client.Name;
+                    entity.Password = client.Password;
+                    entity.Phone = client.Phone;
+                    entity.State = client.State;
+                }
+                await _context.SaveChangesAsync();
+                return true;
             }
-            await _context.SaveChangesAsync();
+            catch (Exception ex)
+            {
+                return false;
+            }
+            
         }
 
         public async Task<Client> UpdateClientPatchAsync(Guid id, JsonPatchDocument clientDocument)
