@@ -2,7 +2,25 @@
 
 namespace TransactionalTest.Models
 {
-    public class Client: Person
+    public class ClientRequest
+    {
+        [Required]
+        [RegularExpression(@"^[a-zA-Z0-9 ]*$")]
+        public string Name { get; set; }
+        public GenderEnum Gender { get; set; }
+        public string? Age { get; set; }
+        public string? Identification { get; set; }
+        [Required]
+        public string Address { get; set; }
+        [Required]
+        [RegularExpression(@"^[0-9]*$")]
+        public string Phone { get; set; }
+        [Required]
+        public string Password { get; set; }
+        [Required]
+        public StateEnum State { get; set; }
+    }
+    public class Client : Person
     {
         //[Key]
         //public Guid ClientId { get; set; }
