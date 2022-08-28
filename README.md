@@ -1,2 +1,4 @@
 # TransactionalTest
-Test with DDD and clean arq
+Api for transactionality.
+Pattern Repository
+Pattern Service
