@@ -12,10 +12,10 @@ namespace TransactionalTest.Repositories
         Task<Account?> GetAccountByNumberAsync(long accountNumber);
         Task<Account?> GetAccountByIdAsync(Guid id);
         Task<Account> CreateAccountAsync(Account account);
-        void UpdateAccountById(Account account);
+        Task<bool> UpdateAccountById(Account account);
         Task<Account> UpdateAccountPatchAsync(Guid id, JsonPatchDocument accountDocument);
 
-        void DeleteAccountById(Account account);
+        Task<bool> DeleteAccountById(Account account);
     }
     public class AccountRepository : IAccountRepository
     {
@@ -32,10 +32,18 @@ namespace TransactionalTest.Repositories
             return account;
         }
 
-        public async void DeleteAccountById(Account account)
+        public async Task<bool> DeleteAccountById(Account account)
         {
-            _context.Account.Remove(account);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Account.Remove(account);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public async Task<Account?> GetAccountByIdAsync(Guid id)
@@ -55,18 +63,26 @@ namespace TransactionalTest.Repositories
 
         public async Task<List<Account>> GetAccountsByClientIdAsync(Guid clienId)
         {
-            return await _context.Account.Where(acc => acc.client.Id == clienId).ToListAsync();
+            return await _context.Account.Where(acc => acc.clientId == clienId).ToListAsync();
         }
 
-        public async void UpdateAccountById(Account account)
+        public async Task<bool> UpdateAccountById(Account account)
         {
-            var entity = await _context.Account.FirstOrDefaultAsync(c => c.Id == account.Id);
-            if (entity != null)
+            try
             {
-                entity.AccountType = account.AccountType;
-                entity.State = account.State;
+                var entity = await _context.Account.FirstOrDefaultAsync(c => c.Id == account.Id);
+                if (entity != null)
+                {
+                    entity.AccountType = account.AccountType;
+                    entity.State = account.State;
+                }
+                await _context.SaveChangesAsync();
+                return true;
             }
-            await _context.SaveChangesAsync();
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public async Task<Account> UpdateAccountPatchAsync(Guid id, JsonPatchDocument accountDocument)
