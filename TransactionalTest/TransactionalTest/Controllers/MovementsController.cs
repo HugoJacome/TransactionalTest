@@ -8,7 +8,7 @@ using TransactionalTest.Services;
 namespace TransactionalTest.Controllers
 {
     [ApiController]
-    [Route("movimiento")]
+    [Route("movimientos")]
     public class MovementsController : Controller
     {
         private IMovementRepository _movementRepository;

@@ -25,7 +25,7 @@ namespace TransactionalTest.Controllers
         {
             var trxs = await _reportRepository.GetMovementsByDateAndClientAsync(reportData);
             if (trxs == null) return BadRequest(ExceptionConstants.ERROR_DATA_NOT_FOUND);
-            // Service to map trx to report model
+            // Service to map trxs to report model
             return Ok(trxs);
         }
     }
