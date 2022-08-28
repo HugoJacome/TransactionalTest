@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TransactionalTest.Context;
 
@@ -11,9 +12,10 @@ using TransactionalTest.Context;
 namespace TransactionalTest.Context.AppDB
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220827205121_Change Client request object")]
+    partial class ChangeClientrequestobject
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,10 +39,6 @@ namespace TransactionalTest.Context.AppDB
                     b.Property<double>("Balance")
                         .HasColumnType("float");
 
-                    b.Property<string>("ClientIdentification")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<double>("OpeningBalance")
                         .HasColumnType("float");
 
@@ -51,6 +49,8 @@ namespace TransactionalTest.Context.AppDB
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("clientId");
 
                     b.ToTable("Account");
                 });
@@ -137,6 +137,17 @@ namespace TransactionalTest.Context.AppDB
                         .HasColumnType("int");
 
                     b.HasDiscriminator().HasValue("Client");
+                });
+
+            modelBuilder.Entity("TransactionalTest.Models.Account", b =>
+                {
+                    b.HasOne("TransactionalTest.Models.Client", "client")
+                        .WithMany()
+                        .HasForeignKey("clientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("client");
                 });
 
             modelBuilder.Entity("TransactionalTest.Models.Movements", b =>
